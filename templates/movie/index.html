@@ -1,0 +1,18 @@
+{% extends 'admin/base.html' %}
+{% load i18n static %}
+
+{% block title %}电影列表{% endblock %}
+
+{% block content %}
+    <ul>
+        {% for movie in movie_list %}
+            <li>
+                <div>电影名称: {{ movie.mname }}</div>
+                <div><a href="{% url 'movie:detail' movie.id %}"><img src="{{ movie.url }}" width='100px' alt=""></a></div>
+{#                <div><a href="/movie/detail3?movie_id={{ movie.id }}/"><img src="{{ movie.url }}" width='100px' alt=""></a></div>#}
+            </li>
+        {% empty %}
+            没有电影
+        {% endfor %}
+    </ul>
+{% endblock %}

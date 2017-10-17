@@ -1,0 +1,23 @@
+{% extends 'admin/404.html' %}
+{% load i18n %}
+
+{% load static %}
+
+{% block content %}
+    <h2>{% trans 'Page not found' %}</h2>
+    <p>{% trans "We're sorry, but the requested page could not be found." %}</p>
+    <h3 style="color:red">{{ err_message }}</h3>
+    <div><img src="{% static 'img/example.jpg' %}"
+              alt="alt属性是当图片文件不存在时，显示的文字，例如一些纯文本浏览器"
+              width="200px">
+    </div>
+    <div>
+        <form action="{% url 'movie:upload' %}" method="Post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <p>请上传文件</p>
+            <p>暂时没有显示文件的页面，有时间，再加上</p>
+            <input type="file" name="file">
+            <input type="submit" value="上传">
+        </form>
+    </div>
+{% endblock %}

@@ -31,6 +31,9 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'myApp.apps.MyappConfig',
+    'bbs.apps.BbsConfig',
+    'movie.apps.MovieConfig',
     'polls.apps.PollsConfig',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -55,7 +58,7 @@ ROOT_URLCONF = 'mysite.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'template'), ],
+        'DIRS': [os.path.join(BASE_DIR, 'templates'), ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -124,6 +127,19 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
+# 特别注意：STATTIC_ROOT和STATICFILES_DIRS不能同时存在，
+# STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+
+# 下面是开发环境下的用法，
+# 生产环境下的用法是在urls.py（项目还是app的没有说清楚，应该是在APP下）中配置，
+# 配置方法详见上面的网页。
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'static')
+    # os.path.join(BASE_DIR, 'static'),  # 当直接在static文件下创建css、js、img文件夹的时候可以这样配置。
+    os.path.join(BASE_DIR, 'static/movie'),  # 注意: 当在static下又建app子目录时，应该这样操作，否则找不到静态文件。
+    os.path.join(BASE_DIR, 'static/polls'),
+    os.path.join(BASE_DIR, 'static/bbs'),
 ]
+
+# 配置上传文件的根目录，向站点上传文件时要用到
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')

@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+
+{% load staticfiles %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Login</title>
+</head>
+<body>
+    <div><img src="{% static 'img/example.jpg' %}" width="150px" alt="测试静态文件时候用的" hidden=""></div>
+    <form action="" method="post">
+        {% csrf_token %}
+        <label for="">用户名:<input type="text" name="username"></label>
+        <label for="">密码:<input type="password" name="password"></label>
+        <label for="">登录<input type="submit"></label>
+    </form>
+</body>
+</html>

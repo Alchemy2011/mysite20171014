@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>电影信息</title>
+</head>
+<body>
+    <h5>电影名: {{ movie.mname }}</h5>
+    <div><img src="{{ movie.url }}" alt="" width="100px"></div>
+    <ul>
+        {% for yanyuan in movie.yanyuan_set.all %}
+            <li>
+                {{ yanyuan.pname }}
+            </li>
+        {% empty %}
+            此电影无演员
+        {% endfor %}
+    </ul>
+</body>
+</html>
