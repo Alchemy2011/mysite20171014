@@ -13,4 +13,4 @@ urlpatterns = [
     url(r'^detail3', views.detail3, name='detail3'),
     url(r'^err/$', views.err, name='err'),
     url(r'^upload/$', views.upload, name='upload'),
-]
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

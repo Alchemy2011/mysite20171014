@@ -22,7 +22,8 @@ class GradeAdmin(admin.ModelAdmin):
     inlines = [StudentInfo]
 
     # 列表页属性
-    list_display = ['pk', 'grade_name', 'grade_date', 'grade_girl_num', 'grade_boy_num', 'is_delete']
+    list_display = ['pk', 'grade_name', 'grade_date', 'grade_girl_num',
+                    'grade_boy_num', 'is_delete']
     list_filter = ['grade_name']
     list_per_page = 5
     search_fields = ['grade_name']
@@ -53,12 +54,13 @@ class StudentAdmin(admin.ModelAdmin):
     gender.short_description = "性别"  # 改变字段显示，简短描述
 
     list_display = ['pk', 'student_name', 'student_age', gender,
-                    'student_contend', 'student_grade', 'is_delete']
+                    'student_contend', 'student_grade', 'create_time', 'last_time']
     list_per_page = 2
 
     # 执行动作的位置问题，如果只设置一个会上下都有显示
     actions_on_top = False
     actions_on_bottom = True
+
 
 # 以后使用装饰器进行注册，下面这句就省了
 # admin.site.register(Grade, GradeAdmin)

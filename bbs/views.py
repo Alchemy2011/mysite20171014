@@ -17,6 +17,7 @@ def login(request):
         user = auth.authenticate(username=username, password=password)
         if user is not None:
             auth.login(request, user)
+            bbs_user = BbsUser.objects.get()
             return HttpResponse("login success")
         else:
             return render(request, 'bbs/login.html', {'login_err': "username or password is wrong"})

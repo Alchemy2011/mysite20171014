@@ -1,6 +1,8 @@
+from django.core.validators import RegexValidator
 from django.db import models
 from django.shortcuts import render
 from django.contrib.auth.models import User
+
 
 # Create your views here.
 class BbsUser(models.Model):
@@ -11,7 +13,15 @@ class BbsUser(models.Model):
     # password = models.CharField(max_length=64)
     # email = models.EmailField()
 
-    phone = models.IntegerField()
+    phone = models.CharField(max_length=11,
+                             error_messages={
+                                 'phone_err': '手机号码格式有误',
+                             },
+                             validators=[
+                                 RegexValidator(regex=r'1[3578][0-9]{9}',
+                                                message='手机号码格式错误',
+                                                code='phone_err'),
+                             ])
     sex = models.BooleanField()
     head_image = models.ImageField(upload_to="avatar/", default="avatar/default.jpg")
 
@@ -32,6 +42,7 @@ class Post(models.Model):
 
     def __str__(self):
         return self.title
+
 
 class Comment(models.Model):
     comment_content = models.TextField()

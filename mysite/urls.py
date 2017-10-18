@@ -16,10 +16,14 @@ Including another URLconf
 from django.conf.urls import url, include
 from django.contrib import admin
 
+# 为了测试，另外配置的欢迎页面
+from polls import views
+
 urlpatterns = [
     url(r'^myapp/', include('myApp.urls', namespace='myApp')),
     url(r'^bbs/', include('bbs.urls', namespace='bbs')),
     url(r'^movie/', include('movie.urls', namespace='movie')),
     url(r'^polls/', include('polls.urls', namespace='polls')),
+    url(r'^$', views.hello_django),
     url(r'^admin/', admin.site.urls),
 ]

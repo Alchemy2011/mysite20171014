@@ -25,7 +25,7 @@ SECRET_KEY = ')kt-vihbzj0lg)_^u@&(!3lci2f+4@hf9(s#m+d5r%8o7_69cj'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
@@ -47,7 +47,7 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
+    # 'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -128,7 +128,7 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 # 特别注意：STATTIC_ROOT和STATICFILES_DIRS不能同时存在，
-# STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+# STATIC_ROOT = os.path.join(BASE_DIR, 'static').replace('\\', '/')
 
 # 下面是开发环境下的用法，
 # 生产环境下的用法是在urls.py（项目还是app的没有说清楚，应该是在APP下）中配置，
@@ -142,4 +142,4 @@ STATICFILES_DIRS = [
 
 # 配置上传文件的根目录，向站点上传文件时要用到
 MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media').replace('\\', '/')
