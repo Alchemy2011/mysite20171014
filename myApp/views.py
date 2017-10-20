@@ -1,14 +1,32 @@
 # coding: utf-8
-from django.shortcuts import render
+import os
+
+from django.contrib.auth import logout
+from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
+from django.shortcuts import render, redirect
 
 # Create your views here.
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
+from django.urls import reverse
 
-from .models import Grade, Student
+# 从哪导入settings，有问题
+from django.conf import settings
+# from mysite import settings
+from myApp.task import celery_demo
+from myApp.models import Grade, Student
 
 
 def index(request):
-    return HttpResponse('myApp is a good app')
+    # return HttpResponse('myApp is a good app')
+    # 这里有问题，如果粗存在就会报错。
+    student = Student.objects.get(pk=3)
+    return render(request, 'myApp/index.html',
+                  {'num': 666, 'stu': student, 'str': "myApp is a good app.",
+                   'test': 777, 'code': "<h1>myApp is a escape app.</h1>"})
+
+
+def index1(request):
+    return HttpResponseRedirect('/myapp')
 
 
 def detail(request, num, num2):
@@ -24,7 +42,20 @@ def grades(request):
 
 def students(request):
     student_list = Student.objects.all()
-    return render(request, 'myApp/students.html', {'students': student_list})
+    # Show 25 students per page
+    paginator = Paginator(student_list, 5)
+
+    page = request.GET.get('page')
+    try:
+        students = paginator.page(page)
+    except PageNotAnInteger:
+        # If page is not an integer, deliver first page.
+        students = paginator.page(1)
+    except EmptyPage:
+        # If page is out of range(e.g. 9999), deliver last page of results.
+        students = paginator.page(paginator.num_pages)
+    return render(request, 'myApp/students.html',
+                  {'students': students, 'student_list': student_list})
 
 
 def grade_students(request, grade_id):
@@ -58,7 +89,7 @@ def add_student(request):
     else:
         grade.grade_girl_num += 1
     grade.save()
-    student.save()
+    # student.save()
     return HttpResponse("student ok")
 
 
@@ -120,3 +151,197 @@ def show_response(request):
     res = HttpResponse()
     print(res.content, res.charset, res.status_code)
     return res
+
+
+def cookie_test(request):
+    res = HttpResponse()
+    cookie = request.COOKIES
+    res.write("<h1>" + cookie["myApp"] + "</h1>")
+    # cookie = res.set_cookie("myApp", 'better')
+    return res
+
+
+def redirect1(request):
+    """重定向需要的是地址，是路径"""
+    # return HttpResponseRedirect("/myapp/redirect2")
+    # 可以使用html中url解析的格式, namespace和name不变，那么下面就不需要改动
+    return redirect("myApp:redirect2")
+    # 也可以传url路径
+    # return redirect("/myapp/redirect2")
+
+
+def redirect2(request):
+    return HttpResponse("我是重定向地址，后的视图")
+
+
+def main(request):
+    # 取session
+    username = request.session.get('username', default='游客')
+    return render(request, 'myApp/main.html', {'username': username})
+
+
+def login(request):
+    return render(request, 'myApp/login.html')
+
+
+def show_main(request):
+    username = request.POST.get('username')
+
+    # 存储session
+    request.session['username'] = username
+
+    # 设置过期时间，单位:秒
+    # request.session.set_expiry(10)
+    return redirect("/myapp/main")
+
+
+def my_logout(request):
+    # 退出时，清除session
+    logout(request)
+    # request.session.clear()
+    # request.session.flush()
+    return redirect("/myapp/main")
+
+
+def good(request, page):
+    """
+    html中反向解析url传过来的参数必须接，
+    合成的url要和urls正则中的匹配，
+    有几个参数，就需要有几个圆括号。
+    """
+    return render(request, 'myApp/good.html', {'num': page})
+
+
+def better(request):
+    return render(request, 'myApp/better.html')
+
+
+def home(request):
+    return render(request, 'myApp/home.html')
+
+
+def csrf(request):
+    return render(request, 'myApp/csrf.html')
+
+
+def show_csrf(request):
+    username = request.POST.get('username')
+    password = request.POST.get('password')
+    return render(request, 'myApp/showcsrf.html',
+                  {'username': username, 'password': password})
+
+
+def verify_code(request):
+    """生成验证码图片"""
+    # 引入绘图模块
+    from PIL import Image, ImageDraw, ImageFont
+
+    # 引入随机模块函数
+    import random
+
+    # 自定变量， 用于画面的背景色、宽、高
+    back_ground_color = (random.randrange(20, 100),
+                         random.randrange(20, 100),
+                         random.randrange(20, 100))
+    width = 100
+    height = 50
+
+    # 创建画面对象
+    im = Image.new('RGB', (width, height), back_ground_color)
+    # 创建画笔对象
+    draw = ImageDraw.Draw(im)
+    for i in range(0, 100):
+        xy = (random.randrange(0, width), random.randrange(0, height))
+        fill = (random.randrange(0, 255), 255, random.randrange(0, 255))
+        draw.point(xy, fill=fill)
+    # 定义验证码的备选值
+    strings = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    # 随机选取4个值作为验证码
+    rand_str = ''
+    for i in range(4):
+        rand_str += strings[random.randrange(0, len(strings))]
+    # 构造字体对象
+    font = ImageFont.truetype(r'C:\Windows\Fonts\Microsoft YaHei UI\MSYH.TTC', 40)
+    # 构造字体颜色
+    font_color1 = (255, random.randrange(0, 255), random.randrange(0, 255))
+    font_color2 = (255, random.randrange(0, 255), random.randrange(0, 255))
+    font_color3 = (255, random.randrange(0, 255), random.randrange(0, 255))
+    font_color4 = (255, random.randrange(0, 255), random.randrange(0, 255))
+    # 绘制4个字
+    draw.text((5, 2), rand_str[0], font=font, fill=font_color1)
+    draw.text((25, 2), rand_str[1], font=font, fill=font_color2)
+    draw.text((50, 2), rand_str[2], font=font, fill=font_color3)
+    draw.text((75, 2), rand_str[3], font=font, fill=font_color4)
+    # 释放画笔
+    del draw
+    # 存入session，用于做进一步验证
+    request.session['verify'] = rand_str
+    # 内存文件操作
+    import io
+    buf = io.BytesIO()
+    # 将突破保持在内存中，文件类型为png
+    im.save(buf, 'png')
+    # 将内存中的图片数据返回给客户端， MIME类型为图片png
+    return HttpResponse(buf.getvalue(), 'image/png')
+
+
+def verify_code_file(request):
+    f = request.session.get("flag")
+    strings = ''
+    if f is False:
+        strings = "请重新输入"
+    request.session.clear()
+    return render(request, 'myApp/verifycodefile.html', {'flag': strings})
+
+
+def verify_code_check(request):
+    code1 = request.POST.get("verify_code").upper()
+    code2 = request.session["verify"].upper()
+    if code1 == code2:
+        return render(request, 'myApp/verifycuccess.html')
+    else:
+        request.session['flag'] = False
+        return redirect("myApp:verify_code_file")
+
+
+def upload(request):
+    return render(request, 'myApp/upload.html')
+
+
+def save_file(request):
+    """上传文件必须是post请求"""
+    if request.method == 'POST':
+        file = request.FILES.get('file')
+        # 合成文件在服务器端的路径
+        file_path = os.path.join(os.path.join(settings.MEDIA_ROOT,
+                                              'myApp/upload'), file.name)
+        with open(file_path, 'wb') as fp:
+            # 以文件流的形式一段一段接收
+            for info in file.chunks():
+                fp.write(info)
+        return HttpResponse('上传成功')
+    else:
+        return HttpResponse("上传失败")
+
+
+def ajax_students(request):
+    return render(request, 'myApp/ajaxstudents.html')
+
+
+def students_info(request):
+    students = Student.objects.all()
+    lists = []
+    for student in students:
+        lists.append([student.student_name, student.student_age])
+    return JsonResponse({"data": lists})
+
+
+def edit(request):
+    return render(request, 'myApp/edit.html')
+
+
+def celery(request):
+    """分布式任务调度模块，解决耗时操作和执行定时任务"""
+    # 添加到celery中执行，不会阻塞。但是还需要环境，需要启动redis和work
+    celery_demo.delay()
+    return render(request, 'myApp/celery.html')

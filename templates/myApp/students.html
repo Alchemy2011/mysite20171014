@@ -8,11 +8,48 @@
     <h1>学生信息列表</h1>
     <ul>
         {% for student in  students%}
-            <li><a href="#">{{ student.student_name }}</a>
-            --{{ student.student_contend }}
-            --{{ student.student_grade }}
-            </li>
+            {% if forloop.counter|divisibleby:2 %}
+                <li style="color:red">--<a href="{% url 'myApp:good' 1 %}">{{ student.student_name }}</a>
+                --{{ student.student_contend }}
+                --{{ student.student_grade }}
+                </li>
+            {% else %}
+                <li style="color:blue">--<a href="{% url 'myApp:better' %}">{{ student.student_name }}</a>
+                --{{ student.student_contend }}
+                --{{ student.student_grade }}
+                </li>
+            {% endif %}
+        {% empty %}
+            <li>目前没有学生</li>
         {% endfor %}
+        {% comment "Optional note"%}
+            <p>测试注释标签，在里面都没用了，多行注释</p>
+        {% endcomment %}
     </ul>
+
+{#    分页功能区#}
+    <div class="pagination">
+        <span class="paginator">
+            {% if students.has_previous %}
+                <a href="?page={{ students.previous_page_number }}">pervious</a>
+            {% endif %}
+        <span class="paginator">
+            {% for index in students.paginator.page_range %}
+                {% if index == students.number %}
+                    {{ index }}
+                {% else %}
+                    <a href="?page={{ index }}">{{ index }}</a>
+                {% endif %}
+            {% endfor %}
+        </span>
+        <span class="this-page">
+            Page {{ students.number }} of {{ students.paginator.num_pages }}
+        </span>
+            {% if students.has_next %}
+                <a href="?page={{ students.next_page_number }}">next</a>
+            {% endif %}
+            <a href="?all=" class="showall">显示全部有问题</a>
+        </span>
+    </div>
 </body>
 </html>

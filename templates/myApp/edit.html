@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+{% load static %}
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>富文本</title>
+    <script type="text/javascript" src="{% static 'tiny_mce/tiny_mce.js' %}"></script>
+    <script type="text/javascript">
+        tinyMCE.init({
+            'mode': 'textareas',
+            'theme': 'advanced',
+            'width': 800,
+            'height': 600
+        })
+    </script>
+</head>
+<body>
+<form action="#" method="post">
+    {% csrf_token %}
+    <label for="">
+        content:
+        <textarea name="str" id="" cols="30" rows="10">
+        myapp is the best app.提交功能未完成。写博客时有用，存到数据库。
+        </textarea>
+    </label>
+    <label for=""><input type="submit" value="提交"></label>
+</form>
+</body>
+</html>

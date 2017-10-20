@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>上传文件</title>
+</head>
+<body>
+    <form action="{% url 'myApp:save_file' %}" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <label for=""><input type="file" name="file"></label>
+        <label for=""><input type="submit" value="上传"></label>
+    </form>
+</body>
+</html>

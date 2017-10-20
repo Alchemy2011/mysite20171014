@@ -2,7 +2,7 @@
 from django.contrib import admin
 
 # Register your models here.
-from .models import Grade, Student
+from .models import Grade, Student, Text
 
 
 # 扁平方式：创建班级的时候顺便添加学生，就需要表格内联
@@ -65,3 +65,4 @@ class StudentAdmin(admin.ModelAdmin):
 # 以后使用装饰器进行注册，下面这句就省了
 # admin.site.register(Grade, GradeAdmin)
 # admin.site.register(Student, StudentAdmin)
+admin.site.register(Text)

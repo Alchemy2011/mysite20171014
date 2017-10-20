@@ -3,6 +3,9 @@ from django.db import models
 
 
 # Create your models here.
+from tinymce.models import HTMLField
+
+
 class Grade(models.Model):
     grade_name = models.CharField(max_length=64, unique=True)
     grade_date = models.DateTimeField()
@@ -22,17 +25,17 @@ class StudentManager(models.Manager):
         return super(StudentManager, self).get_queryset().filter(is_delete=False)
 
     # 创建对象的方法二:
-    def create_student(self, name, age, gender, contend, grade, create_time, last_time, is_delete=False):
-        student = self.model()
-        student.student_name = name
-        student.student_age = age
-        student.student_gender = gender
-        student.student_contend = contend
-        student.student_grade = grade
-        student.last_time = last_time
-        student.create_time = create_time
-        student.save()
-        return student
+    # def create_student(self, name, age, gender, contend, grade, create_time, last_time, is_delete=False):
+    #     student = self.model()
+    #     student.student_name = name
+    #     student.student_age = age
+    #     student.student_gender = gender
+    #     student.student_contend = contend
+    #     student.student_grade = grade
+    #     student.last_time = last_time
+    #     student.create_time = create_time
+    #     student.save()
+    #     return student
 
 
 class Student(models.Model):
@@ -59,6 +62,10 @@ class Student(models.Model):
     def __str__(self):
         return self.student_name
 
+    def get_name(self):
+        """演示在模板中调用方法时，随便引入"""
+        return self.student_name
+
     class Meta:
         """设置数据表的元信息，例如改变默认的数据表名，由appname_模型名，改为自定义"""
         db_table = "student"
@@ -76,3 +83,7 @@ class Student(models.Model):
     #                   student_grade=grade, create_time=create_time,
     #                   last_time=last_time, is_delete=is_delete)
     #     return student
+
+class Text(models.Model):
+    # 富文本编辑器，效果似乎一般
+    content = HTMLField()

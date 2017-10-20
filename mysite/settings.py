@@ -15,7 +15,6 @@ import os
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.11/howto/deployment/checklist/
 
@@ -24,9 +23,9 @@ SECRET_KEY = ')kt-vihbzj0lg)_^u@&(!3lci2f+4@hf9(s#m+d5r%8o7_69cj'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
+# DEBUG = False
 
 ALLOWED_HOSTS = ["*"]
-
 
 # Application definition
 
@@ -41,16 +40,22 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'tinymce',  # 配置富文本
+    'djcelery',  # 配置celery
+    'axf',
 ]
 
+# 如果自己添加自定义的中间件的话，那么就是从工程目录开始的路径
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    # 'django.middleware.csrf.CsrfViewMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    # 添加一个自定义的中间件，进行测试
+    # 'middleware.myApp.mymiddleware.MyMiddleWare',
 ]
 
 ROOT_URLCONF = 'mysite.urls'
@@ -73,21 +78,19 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'mysite.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/1.11/ref/settings/#databases
 
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'django20171009',
+        'NAME': 'axf',
         'HOST': '127.0.0.1',
         'PORT': 3306,
         'USER': 'root',
         'PASSWORD': ''
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/1.11/ref/settings/#auth-password-validators
@@ -107,7 +110,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/1.11/topics/i18n/
 
@@ -119,12 +121,18 @@ USE_I18N = True
 
 USE_L10N = True
 
-USE_TZ = True
-
+# 如果不改变下面这个设置，那么虽然后台的时间显示是本地时间，
+# 但是数据库中依然是utc时间，所以简单的方法是修改为False
+# USE_TZ = True
+USE_TZ = False
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
 
+# 下面这个决定了在url中出现的static，和目录名称static是两回事
+# {% static 'img/example2.jpg' %}
+# 在模板中的static，先是获取下面这个STATIC_URL，然后再拼接后面的路径。
+# 主要对图片起作用
 STATIC_URL = '/static/'
 
 # 特别注意：STATTIC_ROOT和STATICFILES_DIRS不能同时存在，
@@ -133,13 +141,49 @@ STATIC_URL = '/static/'
 # 下面是开发环境下的用法，
 # 生产环境下的用法是在urls.py（项目还是app的没有说清楚，应该是在APP下）中配置，
 # 配置方法详见上面的网页。
+# 主要对css和js起作用，配置的是静态文件目录，注意：是目录
 STATICFILES_DIRS = [
     # os.path.join(BASE_DIR, 'static'),  # 当直接在static文件下创建css、js、img文件夹的时候可以这样配置。
     os.path.join(BASE_DIR, 'static/movie'),  # 注意: 当在static下又建app子目录时，应该这样操作，否则找不到静态文件。
     os.path.join(BASE_DIR, 'static/polls'),
     os.path.join(BASE_DIR, 'static/bbs'),
+    os.path.join(BASE_DIR, 'static/myApp'),
+    os.path.join(BASE_DIR, 'static/axf'),
 ]
 
 # 配置上传文件的根目录，向站点上传文件时要用到
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media').replace('\\', '/')
+
+# 配置redis数据库，来缓存session会话
+# https://pypi.python.org/pypi/django-redis-sessions/0.6.1
+SESSION_ENGINE = 'redis_sessions.session'
+SESSION_REDIS = {
+    'host': 'localhost',
+    'port': 6379,
+    'db': 0,
+    'password': "",  # 没有设置redis的秘密的话，就这样配置，似乎比空字符串还舒服
+    'prefix': 'session',
+    'socket_timeout': 1
+}
+
+# 富文本
+TINYMCE_DEFAULT_CONFIG = {
+    'theme': 'advanced',
+    'width': 600,
+    'height': 400,
+}
+
+# 配置celery
+# 初始化djcelery
+import djcelery
+djcelery.setup_loader()
+
+BROKER_URL = 'redis://:''@127.0.0.1:6379/0'
+CELERY_IMPORTS = ('myApp.task',)
+# 下面这些似乎没用
+# CELERY_ACCEPT_CONTENT = ['json']
+# CELERY_TASK_SERIALIZER = 'json'
+# CELERY_RESULT_SERIALIZER = 'json'
+# CELERYBEAT_SCHEDULER = 'djcelery.schedulers.DatabaseScheduler'
+# CELERY_TIMEZONE = 'Asia/Shanghai'

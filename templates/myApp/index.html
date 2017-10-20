@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+{% load static %}
+{#{% load static from staticfiles %} 四班的老师这样配，不知什么原因#}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>首页</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
+    <script type="text/javascript" src="{% static 'js/jquery.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/myApp.js' %}"></script>
+</head>
+<body>
+    <h1>myApp is ok</h1>
+    <h1>调用对象的属性：{{ stu.student_name }}--{{ stu.student_contend }}--*{{ num }}*</h1>
+    <h1>调用对象的方法（但是不能传递参数）：{{ stu.get_name }}--{{ stu.student_contend }}--*{{ num }}*</h1>
+    <h1>测试过滤器：{{ str|upper }}</h1>
+    {% autoescape off %}
+        {{ code }}<h1 style="color:red ">处理多个转义，会把引号内的内容当做文本；当为off时，显示原始内容</h1>
+    {% endautoescape %}
+{#    {{ code|escape }}#}
+    {{ code|safe }}<h1 style="color:green">处理单个不需要转义的字符串，不需要转义就是以html格式显示</h1>
+    <h1>{{ str }}</h1>
+    <h1>{{ test|default:'没有或False,解决变量不存在时显示默认值的问题，default后冒号后不能有空格' }}</h1>
+    <h1>利用模板语言计算：加减乘除 num = {{ num }}</h1>
+    <h1>num + 10 = {{ num|add:10 }}</h1>
+    <h1>num - 10 = {{ num|add:-10 }}</h1>
+    <h1>num * 10 = {% widthratio num 1 10 %}</h1>
+    <h1>num / 10 = {% widthratio num 10 1 %}</h1>
+    <img src="{% static 'img/example2.jpg' %}" alt="example.jpg">
+</body>
+</html>

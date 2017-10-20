@@ -20,6 +20,10 @@ from django.contrib import admin
 from polls import views
 
 urlpatterns = [
+    url(r'^axf/', include('axf.urls', namespace='axf')),
+    # 富文本编辑器
+    url(r'^tinymce/', include('tinymce.urls', namespace='tinymce')),
+
     url(r'^myapp/', include('myApp.urls', namespace='myApp')),
     url(r'^bbs/', include('bbs.urls', namespace='bbs')),
     url(r'^movie/', include('movie.urls', namespace='movie')),

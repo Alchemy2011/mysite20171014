@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        #header{
+            width: 100%;height: 100px;background-color: red;
+        }
+        #footer{
+            width: 100%;height: 100px;background-color: green;
+        }
+    </style>
+    {% block title %}
+        <title>基模板</title>
+    {% endblock %}
+</head>
+<body>
+    <div id="header">header</div>
+    <div id="content-main">
+        {% block content-main %}
+            <div>继承后填充需要的内容</div>
+        {% endblock %}
+    </div>
+    <div id="footer">footer</div>
+</body>
+</html>

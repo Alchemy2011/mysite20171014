@@ -1,0 +1,22 @@
+{% extends 'axf/base.html' %}
+
+{% load static from staticfiles %}
+
+{% block linkscript %}
+    <link rel="stylesheet" type="text/css"
+          href="{% static 'cart/css/cart.css' %}">
+    <script type="text/javascript" charset="utf-8"
+            src="{% static 'cart/js/cart.js' %}"></script>
+{% endblock %}
+
+{% block title %}
+    <title>cart</title>
+{% endblock %}
+
+{% block base %}
+    <h1>axf is a good app</h1>
+    <h1>axf is a nice app</h1>
+    <h1>axf is a cool app</h1>
+    <h1>axf is a handsome app</h1>
+    <h1>cart</h1>
+{% endblock %}
